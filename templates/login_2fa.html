@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Verify 2FA · PassingThePass{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="card">
+    <h1>Two-factor check</h1>
+    <p class="sub">Enter the 6-digit code from your authenticator app.</p>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <form method="post" action="/login/2fa">
+      <input type="hidden" name="pid" value="{{ pid }}">
+      <label for="code">Authentication code</label>
+      <input id="code" name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autofocus required>
+      <button class="btn" type="submit">Verify</button>
+    </form>
+    <div class="auth-links"><a href="/login">Back to login</a></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Vault · PassingThePass{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Team Vault</h1>
+    <div class="sub">{{ items|length }} item{{ 's' if items|length != 1 else '' }} · encrypted at rest</div>
+  </div>
+  <button class="btn small" onclick="openCreateModal()">+ Add item</button>
+</div>
+
+{% if items %}
+<div class="vault-grid">
+  {% for item in items %}
+  <div class="vault-card" id="card-{{ item.id }}">
+    <h3>{{ item.title }}</h3>
+    {% if item.username %}<div class="meta">&#128100; {{ item.username }}</div>{% endif %}
+    {% if item.url %}<div class="meta">&#128279; {{ item.url }}</div>{% endif %}
+    <div class="meta" style="font-size:0.75rem;">Updated {{ item.updated_at }}</div>
+    <div class="reveal-box" id="reveal-{{ item.id }}"></div>
+    <div class="actions">
+      <button class="btn small secondary" onclick="toggleReveal({{ item.id }})">Reveal</button>
+      <button class="btn small secondary" onclick="openEditModal({{ item.id|tojson }}, {{ item.title|tojson }}, {{ item.username|tojson }}, {{ item.url|tojson }})">Edit</button>
+      <form method="post" action="/vault/{{ item.id }}/delete" onsubmit="return confirm('Delete this item?');" style="margin:0;">
+        <button class="btn small danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>Your vault is empty.</p>
+  <button class="btn small" onclick="openCreateModal()">Add your first item</button>
+</div>
+{% endif %}
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Add item</h2>
+    <form method="post" id="itemForm">
+      <label for="f_title">Title</label>
+      <input id="f_title" name="title" required placeholder="e.g. GitHub org account">
+      <div class="field-row">
+        <div>
+          <label for="f_username">Username</label>
+          <input id="f_username" name="username" placeholder="team@acme.com">
+        </div>
+        <div>
+          <label for="f_url">URL</label>
+          <input id="f_url" name="url" placeholder="https://github.com">
+        </div>
+      </div>
+      <label for="f_secret">Password <span id="secretHint" style="font-weight:400;"></span></label>
+      <input id="f_secret" name="secret" type="text" autocomplete="off" placeholder="Enter or paste password">
+      <label for="f_notes">Notes</label>
+      <textarea id="f_notes" name="notes" placeholder="Optional notes"></textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/strength.js"></script>
+<script>
+  let strengthWired = false;
+
+  function openCreateModal() {
+    document.getElementById("modalTitle").textContent = "Add item";
+    document.getElementById("itemForm").action = "/vault/create";
+    document.getElementById("f_title").value = "";
+    document.getElementById("f_username").value = "";
+    document.getElementById("f_url").value = "";
+    document.getElementById("f_secret").value = "";
+    document.getElementById("f_notes").value = "";
+    document.getElementById("f_secret").required = true;
+    document.getElementById("secretHint").textContent = "";
+    document.getElementById("modalOverlay").classList.add("open");
+    if (!strengthWired) {
+      wireStrengthMeter(document.getElementById("f_secret"), { contextSelectors: ["#f_title", "#f_username"] });
+      strengthWired = true;
+    }
+  }
+
+  function openEditModal(id, title, username, url) {
+    document.getElementById("modalTitle").textContent = "Edit item";
+    document.getElementById("itemForm").action = `/vault/${id}/update`;
+    document.getElementById("f_title").value = title || "";
+    document.getElementById("f_username").value = username || "";
+    document.getElementById("f_url").value = url || "";
+    document.getElementById("f_secret").value = "";
+    document.getElementById("f_notes").value = "";
+    document.getElementById("f_secret").required = false;
+    document.getElementById("secretHint").textContent = "(leave blank to keep current password)";
+    document.getElementById("modalOverlay").classList.add("open");
+    if (!strengthWired) {
+      wireStrengthMeter(document.getElementById("f_secret"), { contextSelectors: ["#f_title", "#f_username"] });
+      strengthWired = true;
+    }
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("open");
+  }
+
+  async function toggleReveal(id) {
+    const box = document.getElementById(`reveal-${id}`);
+    if (box.style.display === "block") {
+      box.style.display = "none";
+      return;
+    }
+    box.textContent = "Loading...";
+    box.style.display = "block";
+    try {
+      const res = await fetch(`/vault/${id}/reveal`);
+      if (!res.ok) throw new Error("failed");
+      const data = await res.json();
+      box.innerHTML = "";
+      const span = document.createElement("span");
+      span.textContent = data.secret;
+      const copyBtn = document.createElement("button");
+      copyBtn.textContent = "Copy";
+      copyBtn.className = "btn small secondary";
+      copyBtn.style.marginLeft = "8px";
+      copyBtn.onclick = () => navigator.clipboard.writeText(data.secret);
+      box.appendChild(span);
+      box.appendChild(copyBtn);
+    } catch (e) {
+      box.textContent = "Could not load secret.";
+    }
+  }
+
+  document.getElementById("modalOverlay").addEventListener("click", (e) => {
+    if (e.target.id === "modalOverlay") closeModal();
+  });
+</script>
+{% endblock %}

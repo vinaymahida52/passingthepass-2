@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Join team · PassingThePass{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="card">
+    <h1>Join your team's vault</h1>
+    <p class="sub">Ask a teammate for the invite code shown on their Team page.</p>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <form method="post" action="/join">
+      <label for="invite_code">Invite code</label>
+      <input id="invite_code" name="invite_code" required placeholder="ABCD1234" style="text-transform:uppercase">
+      <label for="name">Your name</label>
+      <input id="name" name="name" required placeholder="Jane Doe">
+      <label for="email">Work email</label>
+      <input id="email" name="email" type="email" required placeholder="jane@acme.com">
+      <label for="password">Master password</label>
+      <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password">
+      <button class="btn" type="submit">Join team</button>
+    </form>
+    <div class="auth-links">
+      Starting fresh? <a href="/signup">Create a new team</a><br>
+      Already have an account? <a href="/login">Log in</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/strength.js"></script>
+<script>
+  wireStrengthMeter(document.getElementById("password"), { contextSelectors: ["#email", "#name"] });
+</script>
+{% endblock %}

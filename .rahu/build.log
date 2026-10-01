@@ -1,0 +1,45 @@
+
+=== build 2026-10-02 01:34 ===
+💬 I'll build a team password-manager MVP ("PassingThePass") in Python/FastAPI since that fits the brief well (2FA, encrypt
+▶ Check Node, Python, and current directory
+▶ List current directory contents
+▶ Check .rahu folder contents
+💬 Confirmed: empty project folder, name "PassingThePass" — a team password manager. Let's set up the Python environment an
+▶ Create Python virtual environment
+▶ Install Python dependencies into venv
+💬 Good, installed cleanly. Let me verify the key packages import correctly (especially `cryptography` and `bcrypt`, which 
+▶ Verify all dependencies import correctly
+▶ Install and verify bcrypt
+💬 bcrypt installed fine. I'll use passlib's `pbkdf2_sha256` instead (pure-Python, zero native-dependency risk on this very
+💬 Now let's build the core app. First the DB layer.
+✏️ __init__.py
+✏️ db.py
+✏️ crypto.py
+💬 Now the auth module (password hashing, JWT session tokens, TOTP 2FA).
+✏️ auth.py
+💬 Now let's add an audit/notifications helper module, then build main.py.
+✏️ services.py
+✏️ main.py
+💬 I left a stub endpoint for API vault creation — let me properly implement it instead of leaving a dead-end.
+✏️ main.py
+✏️ main.py
+💬 It's unused dead code — let me remove it since all page routes use manual `current_user` checks.
+✏️ main.py
+✏️ main.py
+💬 Backend routes done. Now let's build templates and static assets — mobile-friendly CSS, the adaptive password strength m
+✏️ style.css
+✏️ strength.js
+💬 Now the notifications + vault UI JS, and the base template with topbar/bell.
+✏️ notifications.js
+✏️ icon.svg
+💬 Now let's build the Jinja2 templates, starting with base.html.
+✏️ base.html
+✏️ signup.html
+✏️ join.html
+✏️ login.html
+✏️ login_2fa.html
+✏️ dashboard.html
+✏️ settings_2fa.html
+✏️ main.py
+💬 Now add the QR PNG route right after the settings_2fa page route.
+✏️ main.py

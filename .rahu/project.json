@@ -1,0 +1,16 @@
+{
+  "slug": "passingthepass-2",
+  "name": "PassingThePass",
+  "idea": "Add adaptive strength meter, 2FA, team login API, mobile‑friendly UI, audit log, push notifications for changes. MVP 7 days, $2000 dev, target small teams.",
+  "verdict": "",
+  "status": "failed",
+  "created": 1790885062.8246026,
+  "updated": 1790885443.636371,
+  "session_id": "",
+  "summary": "Cancel kar diya.",
+  "url": "",
+  "run_cmd": "",
+  "github": "",
+  "deploy_url": "",
+  "builds": 1
+}

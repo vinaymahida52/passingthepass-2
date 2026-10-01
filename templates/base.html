@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PassingThePass{% endblock %}</title>
+  <link rel="icon" href="/static/img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  {% if user %}
+  <div class="topbar">
+    <div class="brand"><span class="dot">&#128274;</span> PassingThePass</div>
+    <nav>
+      <a href="/dashboard" class="{{ 'active' if active=='dashboard' }}">Vault</a>
+      <a href="/team" class="{{ 'active' if active=='team' }}">Team</a>
+      <a href="/audit" class="{{ 'active' if active=='audit' }}">Audit Log</a>
+      <a href="/settings/2fa" class="{{ 'active' if active=='2fa' }}">2FA</a>
+      <button class="bell" id="notifBell">&#128276;<span class="badge" id="notifBadge"></span></button>
+      <a href="/logout">Logout</a>
+    </nav>
+  </div>
+  <div class="notif-panel" id="notifPanel"></div>
+  {% endif %}
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+  {% if user %}
+  <script src="/static/js/notifications.js"></script>
+  {% endif %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>
